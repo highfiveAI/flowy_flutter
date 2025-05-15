@@ -30,11 +30,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^1.4.0   # 또는 ^0.14.0 이상 버전
+
+  file_selector: ^0.9.3
+  http: ^1.4.0
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  dio: ^5.8.0+1
 
 dev_dependencies:
   flutter_test:
