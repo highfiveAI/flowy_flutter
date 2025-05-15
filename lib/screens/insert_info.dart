@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:record3/screens/upload_info.dart';
 
 class InputScreen extends StatefulWidget {
+  final String userType;
+
+  InputScreen({required this.userType});
+
   @override
   _InputScreenState createState() => _InputScreenState();
 }
@@ -124,6 +128,7 @@ class _InputScreenState extends State<InputScreen> {
                 Expanded(
                   flex: 1,
                   child: RoleSelector(
+                    userType: widget.userType,
                     onRoleSelected: (role) {
                       _roleController.text = role;
                     },
@@ -244,24 +249,45 @@ class _InputScreenState extends State<InputScreen> {
 }
 
 class RoleSelector extends StatefulWidget {
+  final String userType;
   final Function(String) onRoleSelected;
-  const RoleSelector({Key? key, required this.onRoleSelected}) : super(key: key);
+  const RoleSelector({Key? key, required this.userType, required this.onRoleSelected}) : super(key: key);
 
   @override
   State<RoleSelector> createState() => _RoleSelectorState();
 }
 
 class _RoleSelectorState extends State<RoleSelector> {
-  final List<String> roles = [
-    '팀장 / 조장',
-    '발표자',
-    'PPT 제작자',
-    '자료조사 담당',
-    '스크립트 작성자',
-    '보고서 작성자',
-    '리허설 진행자',
-    '기타 (직접 입력)',
-  ];
+  late List<String> roles;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.userType == 'student') {
+      roles = [
+        '팀장 / 조장',
+        '발표자',
+        'PPT 제작자',
+        '자료조사 담당',
+        '스크립트 작성자',
+        '보고서 작성자',
+        '리허설 진행자',
+        '기타 (직접 입력)',
+      ];
+    } else {
+      roles = [
+        '기획자 (PM)',
+        '프론트엔드 개발자',
+        '백엔드 개발자',
+        '디자이너 (UI/UX)',
+        '데이터 분석가',
+        '마케터',
+        '인턴/보조',
+        '기타 (직접 입력)',
+      ];
+    }
+  }
+
   String? selectedRole;
   String customRole = '';
 

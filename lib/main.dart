@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:record3/screens/insert_info.dart';
+import 'package:record3/screens/type_select.dart';
 
 void main() {
   runApp(MyApp());
@@ -45,10 +45,9 @@ class WelcomeScreen extends StatelessWidget {
               width: 300, // 버튼의 넓이 지정
               child: ElevatedButton(
                 onPressed: () {
-                  // 버튼 클릭 시 처리할 작업
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => InputScreen()),
+                    MaterialPageRoute(builder: (context) => SelectTypeScreen()),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -73,3 +72,4 @@ class WelcomeScreen extends StatelessWidget {
     );
   }
 }
+
