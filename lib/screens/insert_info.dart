@@ -197,6 +197,40 @@ class _InputScreenState extends State<InputScreen> {
             ),
             SizedBox(height: 20),
 
+            Container(
+              child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,  // 버튼 간격 균등 배치
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      // 첫 번째 버튼 동작
+                      print('첫 번째 버튼 클릭');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    ),
+                    child: const Text('버튼 1'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      // 두 번째 버튼 동작
+                      print('두 번째 버튼 클릭');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    ),
+                    child: const Text('버튼 2'),
+                  ),
+                ],
+              ),
+            ),
+            ),
+
+
             ElevatedButton(
               onPressed: () {
                 final uploadVo = UploadVO(

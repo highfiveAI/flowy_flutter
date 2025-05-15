@@ -201,7 +201,6 @@ class _UploadScreenState extends State<UploadScreen> {
               ),
             ),
             SizedBox(height: 50),
-
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
