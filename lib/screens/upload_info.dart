@@ -9,7 +9,8 @@ import 'package:record3/vos/upload_vo.dart';
 class UploadScreen extends StatefulWidget {
 
   final UploadVO uploadVo;
-  const UploadScreen({super.key, required this.uploadVo});
+  final XFile? recordFile;
+  const UploadScreen({super.key, required this.uploadVo, required this.recordFile});
 
   @override
   _UploadScreenState createState() => _UploadScreenState();
@@ -176,28 +177,28 @@ class _UploadScreenState extends State<UploadScreen> {
               height: 150,
               color: Colors.black12,
               child: Center(
-                child: _selectedFile == null
-                    ? ElevatedButton(
-                  onPressed: _pickFile,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue, // 버튼 배경색
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10), // 버튼 크기 조정
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10), // 버튼 모서리 둥글게
-                    ),
-                  ),
-                  child: const Text(
-                    '선택',
+                // child: _selectedFile == null
+                //     ? ElevatedButton(
+                //   onPressed: _pickFile,
+                //   style: ElevatedButton.styleFrom(
+                //     backgroundColor: Colors.blue, // 버튼 배경색
+                //     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10), // 버튼 크기 조정
+                //     shape: RoundedRectangleBorder(
+                //       borderRadius: BorderRadius.circular(10), // 버튼 모서리 둥글게
+                //     ),
+                //   ),
+                  child: Text(
+                    '선택된 파일: ${widget.recordFile?.name}',
                     style: TextStyle(
-                      color: Colors.white, // 텍스트 색상 변경
+                      color: Colors.black, // 텍스트 색상 변경
                       fontSize: 18,
                     ),
                   ),
-                )
-                    : Text(
-                  '선택한 파일: ${_selectedFile!.name}',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
+                // )
+                //     : Text(
+                //   '선택한 파일: ${widget.recordFile?.name}',
+                //   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                // ),
               ),
             ),
             SizedBox(height: 50),

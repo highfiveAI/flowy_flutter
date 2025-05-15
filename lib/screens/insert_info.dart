@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'package:file_selector/file_selector.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:record3/screens/recording_screen.dart';
 import 'package:record3/screens/upload_info.dart';
 import 'package:record3/vos/upload_vo.dart';
 
@@ -14,6 +16,10 @@ class InputScreen extends StatefulWidget {
 }
 
 class _InputScreenState extends State<InputScreen> {
+
+  XFile? _selectedFile;
+  String _uploadStatus = '파일을 선택하세요';
+
   List<Map<String, String>> attendees = [];
   final TextEditingController _controller1 = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
@@ -22,6 +28,72 @@ class _InputScreenState extends State<InputScreen> {
   final TextEditingController _controller5 = TextEditingController();
   DateTime? _selectedDateTime;
   final TextEditingController _dateTimeController = TextEditingController();
+
+
+  Future<void> _pickFile() async {
+    try {
+      final XFile? file = await openFile(
+        acceptedTypeGroups: [
+          XTypeGroup(label: 'images', extensions: ['jpg', 'jpeg', 'png', 'gif', 'bmp']),
+          XTypeGroup(label: 'documents', extensions: ['pdf', 'doc', 'docx', 'txt']),
+          XTypeGroup(label: 'audio', extensions: ['mp3', 'wav', 'aac']),
+          XTypeGroup(label: 'video', extensions: ['mp4', 'mkv', 'avi']),
+          XTypeGroup(label: 'archives', extensions: ['zip', 'rar', '7z']),
+          XTypeGroup(label: 'code', extensions: ['js', 'dart', 'py', 'java']),
+        ],
+      );
+
+      if (file != null) {
+        setState(() {
+          _selectedFile = file;
+          _uploadStatus = '파일 선택 완료: ${file.name}';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _uploadStatus = '파일 선택 오류: $e';
+      });
+    }
+  }
+  void _navigateToUploadScreen(BuildContext context) {
+    if (_selectedFile == null) {
+      // 경고창 표시
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("파일 없음"),
+            content: const Text("파일을 먼저 선택해주세요."),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context), // 창 닫기
+                child: const Text("확인"),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      // 파일이 있을 때만 화면 전환
+      final uploadVo = UploadVO(
+        subj: _controller1.text,
+        infoN: attendees,
+        loc: _controller5.text,
+        df: _dateTimeController.text,
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              UploadScreen(
+                uploadVo: uploadVo,
+                recordFile: _selectedFile,
+              ),
+        ),
+      );
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -197,55 +269,74 @@ class _InputScreenState extends State<InputScreen> {
             ),
             SizedBox(height: 20),
 
-            Container(
-              child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,  // 버튼 간격 균등 배치
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      // 첫 번째 버튼 동작
-                      print('첫 번째 버튼 클릭');
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            _selectedFile == null
+                ? Container(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,  // 버튼 간격 균등 배치
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => RecordingScreen()),
+                            );
+                          },
+                        style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        ),
+                      child: const Text('녹음'),
+                      ),
+                      ElevatedButton(
+                        onPressed: _pickFile,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        ),
+                      child: const Text('파일올리기'),
+                      ),
+                    ],
                     ),
-                    child: const Text('버튼 1'),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      // 두 번째 버튼 동작
-                      print('두 번째 버튼 클릭');
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                )
+                : Container(
+              padding: const EdgeInsets.all(8.0), // 패딩 추가
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 8,  // 넓이 비율 설정 (8:2)
+                    child: Text(
+                      '선택한 파일: ${_selectedFile!.name}',
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
+                      overflow: TextOverflow.ellipsis,  // 길면 줄임표 처리
                     ),
-                    child: const Text('버튼 2'),
+                  ),
+                  Expanded(
+                    flex: 2,  // 넓이 비율 설정 (8:2)
+                    child: ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _selectedFile = null;
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),    // 모서리 둥글기
+                          side: const BorderSide(color: Colors.black26, width: 1),  // 테두리 색과 두께
+                        ),
+                    ),
+                      child: const Text('X'),
+                    ),
                   ),
                 ],
               ),
             ),
-            ),
-
-
             ElevatedButton(
-              onPressed: () {
-                final uploadVo = UploadVO(
-                  subj: _controller1.text,
-                  infoN: attendees,
-                  loc: _controller5.text,
-                  df: _dateTimeController.text,
-                );
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => UploadScreen(uploadVo: uploadVo),
-                  ),
-                );
-              },
+              onPressed: () => _navigateToUploadScreen(context),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
                 padding: EdgeInsets.symmetric(vertical: 10),
