@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:record3/screens/upload_info.dart';
+import 'package:record3/vos/upload_vo.dart';
 
 class InputScreen extends StatefulWidget {
   @override
@@ -190,36 +191,21 @@ class _InputScreenState extends State<InputScreen> {
               ),
             ),
             SizedBox(height: 20),
+
             ElevatedButton(
-              onPressed: () async {
-                final data = {
-                  'subj': _controller1.text,
-                  'info_n': attendees,
-                  'loc': _controller5.text,
-                  'df': _dateTimeController.text,
-                };
-
-                final url = Uri.parse('http://192.168.0.200:5000/submit'); // ← 여기에 본인의 IP 입력
-
-                try {
-                  final response = await http.post(
-                    url,
-                    headers: {'Content-Type': 'application/json'},
-                    body: jsonEncode(data),
-                  );
-
-                  if (response.statusCode == 200) {
-                    print("응답: ${response.body}");
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => UploadScreen()),
-                    );
-                  } else {
-                    print("서버 에러: ${response.statusCode}");
-                  }
-                } catch (e) {
-                  print("오류 발생: $e");
-                }
+              onPressed: () {
+                final uploadVo = UploadVO(
+                  subj: _controller1.text,
+                  infoN: attendees,
+                  loc: _controller5.text,
+                  df: _dateTimeController.text,
+                );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UploadScreen(uploadVo: uploadVo),
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,

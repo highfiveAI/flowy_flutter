@@ -2,9 +2,15 @@
 import 'package:dio/dio.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
-import 'package:record3/screens/loading.dart';
+import 'package:intl/intl.dart';
+import 'package:record3/screens/review_screen.dart';
+import 'package:record3/vos/upload_vo.dart';
 
 class UploadScreen extends StatefulWidget {
+
+  final UploadVO uploadVo;
+  const UploadScreen({super.key, required this.uploadVo});
+
   @override
   _UploadScreenState createState() => _UploadScreenState();
 }
@@ -13,6 +19,7 @@ class _UploadScreenState extends State<UploadScreen> {
 
   XFile? _selectedFile;
   String _uploadStatus = '파일을 선택하세요';
+
 
   Future<void> _pickFile() async {
     try {
@@ -37,6 +44,17 @@ class _UploadScreenState extends State<UploadScreen> {
       setState(() {
         _uploadStatus = '파일 선택 오류: $e';
       });
+    }
+  }
+  String formatDate(String dateString) {
+    try {
+      // 문자열을 DateTime 객체로 파싱
+      DateTime dateTime = DateTime.parse(dateString);
+      // 원하는 형식으로 변환 (예: yyyy년 MM월 dd일 HH:mm)
+      return DateFormat('yyyy년 MM월 dd일 HH:mm').format(dateTime);
+    } catch (e) {
+      // 파싱 실패 시 원래 문자열 반환
+      return dateString;
     }
   }
 
@@ -109,7 +127,7 @@ class _UploadScreenState extends State<UploadScreen> {
                 children: <Widget>[
                   Padding(
                       padding: const EdgeInsets.all(6.0),
-                      child: Text('회의 주제:',
+                      child: Text('회의 주제: ${widget.uploadVo.subj}',
                         style: TextStyle(
                           color: Colors.black54,
                           fontSize: 16,
@@ -118,7 +136,7 @@ class _UploadScreenState extends State<UploadScreen> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(6.0),
-                    child: Text('회의 일시:',
+                    child: Text('회의 일시: ${formatDate(widget.uploadVo.df)}',
                       style: TextStyle(
                           color: Colors.black54,
                           fontSize: 16,
@@ -127,7 +145,17 @@ class _UploadScreenState extends State<UploadScreen> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(6.0),
-                    child: Text('참석자 정보:',
+                    child: Text('회의 장소: ${formatDate(widget.uploadVo.loc)}',
+                      style: TextStyle(
+                          color: Colors.black54,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold
+                      ),),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(6.0),
+                    child: Text('참석자 정보:\n '
+                        '${widget.uploadVo.infoN.map((attendee) => '${attendee['name']} - ${attendee['role']}').join('\n ')}',
                       style: TextStyle(
                           color: Colors.black54,
                           fontSize: 16,
@@ -178,7 +206,7 @@ class _UploadScreenState extends State<UploadScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => CircleScreen()),
+                  MaterialPageRoute(builder: (context) => ReviewScreen()),
                 );
               },
               style: ElevatedButton.styleFrom(
