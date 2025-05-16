@@ -90,9 +90,9 @@ class _SelectTypeScreenState extends State<SelectTypeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('사용자 유형 선택'),
-        backgroundColor: Color(0xFFEDF4FC),
+        backgroundColor: Color.fromRGBO(237, 244, 252, 1),
       ),
-      backgroundColor: Color(0xFFEDF4FC),
+      backgroundColor: Color.fromRGBO(237, 244, 252, 1),
       body: Center(
         child: SingleChildScrollView(
           child: Column(
@@ -103,7 +103,7 @@ class _SelectTypeScreenState extends State<SelectTypeScreen> {
                 '당신은 어떤 유형인가요?',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
               ),
-              SizedBox(height: 24),
+              SizedBox(height: 35),
               _buildTypeCard(
                 type: 'student',
                 imagePath: 'assets/type1.png',
@@ -119,16 +119,16 @@ class _SelectTypeScreenState extends State<SelectTypeScreen> {
                 description: '업무 협업, 소규모 회의 등\n직장 생활을 위한 회의에 적합해요.',
                 color: Colors.green,
               ),
-              SizedBox(height: 24),
+              SizedBox(height: 70),
               SizedBox(
                 width: 320,
                 child: ElevatedButton(
                   onPressed: _selectedType != null ? _goToNextScreen : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
+                    backgroundColor: Color(0xFF1F72DE),
                     padding: EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(50),
                     ),
                   ),
                   child: Text(
