@@ -19,30 +19,32 @@ class WelcomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Welcome'),
+        backgroundColor: Color(0xFFEDF4FC),
+        // title: Text('Welcome'),
       ),
+      backgroundColor: Color(0xFFEDF4FC),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              'WELCOME TO THE APP',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 100),
+            // Text(
+            //   'WELCOME TO THE APP',
+            //   style: TextStyle(
+            //     fontSize: 24,
+            //     fontWeight: FontWeight.bold,
+            //   ),
+            // ),
+            // SizedBox(height: 100),
             ClipRRect(
               borderRadius: BorderRadius.circular(50), // 이미지의 모서리 둥글게
               child: Image.asset(
-                'assets/icon.jpg', // 이미지 경로
-                height: 200, // 이미지 크기 조정
+                'assets/logo.png', // 이미지 경로
+                height: 400, // 이미지 크기 조정
               ),
             ),
-            SizedBox(height: 100),
+            // SizedBox(height: 100),
             SizedBox(
-              width: 300, // 버튼의 넓이 지정
+              width: 350, // 버튼의 넓이 지정
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -51,11 +53,12 @@ class WelcomeScreen extends StatelessWidget {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue, // 버튼 배경색
-                  padding: EdgeInsets.symmetric(vertical: 10), // 패딩 조정
+                  backgroundColor: Color(0xFF1F72DE),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10), // 버튼 모서리 둥글게
+                    borderRadius: BorderRadius.circular(50),
                   ),
+                  padding: EdgeInsets.symmetric(vertical: 14.5, horizontal: 16),
+                  elevation: 0,
                 ),
                 child: Text(
                   '시작하기',
@@ -66,6 +69,7 @@ class WelcomeScreen extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(height: 200),
           ],
         ),
       ),
