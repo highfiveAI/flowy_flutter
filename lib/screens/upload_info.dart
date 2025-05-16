@@ -1,4 +1,3 @@
-
 import 'package:dio/dio.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
@@ -104,127 +103,120 @@ class _UploadScreenState extends State<UploadScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     return Scaffold(
+      backgroundColor: const Color(0xF5F8FCFF),
       appBar: AppBar(
-        title: Text('희의 정보'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        title: const Text('회의 정보', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0), // 가장자리 여백
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Text('회의 정보',
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold
-              ),),
-            Container(
-              color: Colors.black12,
-              width: 200,
-              height: 400,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Padding(
-                      padding: const EdgeInsets.all(6.0),
-                      child: Text('회의 주제: ${widget.uploadVo.subj}',
-                        style: TextStyle(
-                          color: Colors.black54,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold
-                      ),),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(6.0),
-                    child: Text('회의 일시: ${formatDate(widget.uploadVo.df)}',
-                      style: TextStyle(
-                          color: Colors.black54,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold
-                      ),),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(6.0),
-                    child: Text('회의 장소: ${formatDate(widget.uploadVo.loc)}',
-                      style: TextStyle(
-                          color: Colors.black54,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold
-                      ),),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(6.0),
-                    child: Text('참석자 정보:\n '
-                        '${widget.uploadVo.infoN.map((attendee) => '${attendee['name']} - ${attendee['role']}').join('\n ')}',
-                      style: TextStyle(
-                          color: Colors.black54,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold
-                      ),),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 50),
-            Text('파일 업로드',
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold
-              ),
-            ),
-            Container(
-              height: 150,
-              color: Colors.black12,
-              child: Center(
-                // child: _selectedFile == null
-                //     ? ElevatedButton(
-                //   onPressed: _pickFile,
-                //   style: ElevatedButton.styleFrom(
-                //     backgroundColor: Colors.blue, // 버튼 배경색
-                //     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10), // 버튼 크기 조정
-                //     shape: RoundedRectangleBorder(
-                //       borderRadius: BorderRadius.circular(10), // 버튼 모서리 둥글게
-                //     ),
-                //   ),
-                  child: Text(
-                    '선택된 파일: ${widget.recordFile?.name}',
-                    style: TextStyle(
-                      color: Colors.black, // 텍스트 색상 변경
-                      fontSize: 18,
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: width * 0.06, vertical: height * 0.02),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 8),
+                const Text('회의 정보', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                Card(
+                  color: const Color(0xFFE9EEF5),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  elevation: 0,
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(18),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('회의 주제 :', style: TextStyle(color: Colors.black54, fontSize: 15, fontWeight: FontWeight.w500)),
+                        const SizedBox(height: 4),
+                        Text(widget.uploadVo.subj, style: TextStyle(color: Colors.black87, fontSize: 15)),
+                        const SizedBox(height: 10),
+                        Text('회의 일시 :', style: TextStyle(color: Colors.black54, fontSize: 15, fontWeight: FontWeight.w500)),
+                        const SizedBox(height: 4),
+                        Text(formatDate(widget.uploadVo.df), style: TextStyle(color: Colors.black87, fontSize: 15)),
+                        const SizedBox(height: 10),
+                        Text('회의 장소 :', style: TextStyle(color: Colors.black54, fontSize: 15, fontWeight: FontWeight.w500)),
+                        const SizedBox(height: 4),
+                        Text(formatDate(widget.uploadVo.loc), style: TextStyle(color: Colors.black87, fontSize: 15)),
+                        const SizedBox(height: 10),
+                        Text('참석자 정보 :', style: TextStyle(color: Colors.black54, fontSize: 15, fontWeight: FontWeight.w500)),
+                        const SizedBox(height: 4),
+                        SingleChildScrollView(
+                          child: Text(
+                            widget.uploadVo.infoN.map((attendee) => '${attendee['name']} - ${attendee['role']}').join('\n '),
+                            style: TextStyle(color: Colors.black87, fontSize: 15),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                // )
-                //     : Text(
-                //   '선택한 파일: ${widget.recordFile?.name}',
-                //   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                // ),
+                ),
+                const SizedBox(height: 32),
+                const Text('파일 업로드', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                Card(
+                  color: const Color(0xFFE9EEF5),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  elevation: 0,
+                  child: Container(
+                    width: double.infinity,
+                    height: 70,
+                    padding: const EdgeInsets.symmetric(horizontal: 18),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(Icons.radio_button_checked, color: Colors.blue, size: 22),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            ' ${widget.recordFile?.name}',
+                            style: TextStyle(color: Colors.black54, fontSize: 16),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 32),
+              ],
+            ),
+          ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+        child: SizedBox(
+          width: double.infinity,
+          height: 48,
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ReviewScreen()),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF1F72DE),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
-            SizedBox(height: 50),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ReviewScreen()),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue, // 버튼 배경색
-                padding: EdgeInsets.symmetric(vertical: 10), // 패딩 조정
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10), // 버튼 모서리 둥글게
-                ),
-              ),
-              child: Text(
-                '다음',
-                style: TextStyle(
-                  color: Colors.white, // 텍스트 색상 변경
-                  fontSize: 18, // 텍스트 크기 조정
-                ),
+            child: const Text(
+              '다음',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
