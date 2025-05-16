@@ -29,7 +29,6 @@ class _InputScreenState extends State<InputScreen> {
   DateTime? _selectedDateTime;
   final TextEditingController _dateTimeController = TextEditingController();
 
-
   Future<void> _pickFile() async {
     try {
       final XFile? file = await openFile(
@@ -55,7 +54,12 @@ class _InputScreenState extends State<InputScreen> {
       });
     }
   }
+
   void _navigateToUploadScreen(BuildContext context) {
+    final RegExp emailRegex = RegExp(
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+    );
+
     if (_selectedFile == null) {
       // 경고창 표시
       showDialog(
@@ -73,7 +77,11 @@ class _InputScreenState extends State<InputScreen> {
           );
         },
       );
-    } else {
+    } else if (attendees.isEmpty) {
+
+
+    }
+    else {
       // 파일이 있을 때만 화면 전환
       final uploadVo = UploadVO(
         subj: _controller1.text,
@@ -276,26 +284,45 @@ class _InputScreenState extends State<InputScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,  // 버튼 간격 균등 배치
                       children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
+                      SizedBox(
+                      width: 170,  // 너비 설정
+                      height: 50,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            final result = await Navigator.push(
                               context,
                               MaterialPageRoute(builder: (context) => RecordingScreen()),
                             );
+                            if(result != null) {
+                              setState(() {
+                                _selectedFile = result;
+                              });
+                            }
                           },
-                        style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10), // 둥근 모서리 설정
+                            ),
+                          ),
+                          child: const Text('녹음'),
                         ),
-                      child: const Text('녹음'),
                       ),
-                      ElevatedButton(
-                        onPressed: _pickFile,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      SizedBox(
+                        width: 170,  // 너비 설정
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: _pickFile,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10), // 둥근 모서리 설정
+                            ),
+                          ),
+                          child: const Text('파일올리기'),
                         ),
-                      child: const Text('파일올리기'),
                       ),
                     ],
                     ),
