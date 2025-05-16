@@ -26,46 +26,59 @@ class _SelectTypeScreenState extends State<SelectTypeScreen> {
     }
   }
 
-  Widget _buildCard(String type, Color color) {
+  Widget _buildTypeCard({
+    required String type,
+    required String imagePath,
+    required String title,
+    required String description,
+    required Color color,
+  }) {
     bool isSelected = _selectedType == type;
-
-    return Expanded(
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 200),
-        curve: Curves.easeInOut,
-        transform: isSelected
-            ? Matrix4.diagonal3Values(1.05, 1.05, 1)
-            : Matrix4.identity(),
-        child: GestureDetector(
-          onTap: () => _selectType(type),
-          child: Container(
-            height: 150,
-            margin: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: isSelected ? color.withOpacity(0.15) : Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: isSelected ? color : Colors.grey.shade300,
-                width: 2,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: isSelected ? color.withOpacity(0.4) : Colors.black12,
-                  blurRadius: 12,
-                  offset: Offset(0, 6),
-                ),
-              ],
+    return AnimatedScale(
+      scale: isSelected ? 1.08 : 1.0,
+      duration: Duration(milliseconds: 200),
+      child: GestureDetector(
+        onTap: () => _selectType(type),
+        child: Container(
+          width: 320,
+          margin: EdgeInsets.symmetric(vertical: 12),
+          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+          decoration: BoxDecoration(
+            color: isSelected ? color.withOpacity(0.12) : Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isSelected ? color : Colors.grey.shade300,
+              width: 2,
             ),
-            child: Center(
-              child: Text(
-                type == 'student' ? '학생' : '직장인',
+            boxShadow: [
+              BoxShadow(
+                color: isSelected ? color.withOpacity(0.2) : Colors.black12,
+                blurRadius: 8,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(imagePath, width: 60, height: 60),
+              SizedBox(height: 10),
+              Text(
+                title,
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: isSelected ? color : Colors.black54,
+                  color: isSelected ? color : Colors.black87,
                 ),
               ),
-            ),
+              SizedBox(height: 6),
+              Text(
+                description,
+                style: TextStyle(fontSize: 15, color: Colors.black54),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ),
         ),
       ),
@@ -75,43 +88,59 @@ class _SelectTypeScreenState extends State<SelectTypeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('사용자 유형 선택')),
-      body: Column(
-        children: [
-          SizedBox(height: 40),
-          Text(
-            '당신은 어떤 유형인가요?',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-          ),
-          SizedBox(height: 30),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                _buildCard('student', Colors.blue),
-                _buildCard('worker', Colors.green),
-              ],
-            ),
-          ),
-          Spacer(),
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: ElevatedButton(
-              onPressed: _selectedType != null ? _goToNextScreen : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                padding: EdgeInsets.symmetric(vertical: 14, horizontal: 40),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+      appBar: AppBar(
+        title: Text('사용자 유형 선택'),
+        backgroundColor: Color(0xFFEDF4FC),
+      ),
+      backgroundColor: Color(0xFFEDF4FC),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // SizedBox(height: 32),
+              Text(
+                '당신은 어떤 유형인가요?',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+              ),
+              SizedBox(height: 24),
+              _buildTypeCard(
+                type: 'student',
+                imagePath: 'assets/type1.png',
+                title: '학생',
+                description: '팀 프로젝트, 스터디 등\n학교 생활을 위한 회의에 적합해요.',
+                color: Colors.blue,
+              ),
+              SizedBox(height: 24),
+              _buildTypeCard(
+                type: 'worker',
+                imagePath: 'assets/type2.png',
+                title: '직장인',
+                description: '업무 협업, 소규모 회의 등\n직장 생활을 위한 회의에 적합해요.',
+                color: Colors.green,
+              ),
+              SizedBox(height: 24),
+              SizedBox(
+                width: 320,
+                child: ElevatedButton(
+                  onPressed: _selectedType != null ? _goToNextScreen : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    padding: EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    '다음',
+                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  ),
                 ),
               ),
-              child: Text(
-                '다음',
-                style: TextStyle(fontSize: 18, color: Colors.white),
-              ),
-            ),
+              SizedBox(height: 32),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
