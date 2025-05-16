@@ -19,10 +19,10 @@ class WelcomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFFEDF4FC),
+        backgroundColor: Color.fromRGBO(237, 244, 252, 1),
         // title: Text('Welcome'),
       ),
-      backgroundColor: Color(0xFFEDF4FC),
+      backgroundColor: Color.fromRGBO(237, 244, 252, 1),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
