@@ -1,8 +1,11 @@
 
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:record3/screens/loading.dart';
 import 'package:record3/screens/review_screen.dart';
 import 'package:record3/vos/upload_vo.dart';
 
@@ -20,6 +23,33 @@ class _UploadScreenState extends State<UploadScreen> {
 
   XFile? _selectedFile;
   String _uploadStatus = '파일을 선택하세요';
+
+
+  Future<void> fetchHelloMessage() async {
+    final dio = Dio();
+
+    try {
+      // FastAPI 서버 주소를 입력하세요.
+      final response = await dio.get('http://10.0.2.2:8000/api/test/hello');
+
+      if (response.statusCode == 200) {
+        print("hi");
+        print('응답: ${response.data}');
+      } else {
+        print('에러 코드: ${response.statusCode}');
+      }
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionTimeout) {
+        print('연결 시간이 초과되었습니다.');
+      } else if (e.type == DioExceptionType.receiveTimeout) {
+        print('응답 시간이 초과되었습니다.');
+      } else {
+        print('오류 발생: ${e.message}');
+      }
+    } catch (e) {
+      print('예상치 못한 오류: $e');
+    }
+  }
 
 
   Future<void> _pickFile() async {
@@ -60,29 +90,48 @@ class _UploadScreenState extends State<UploadScreen> {
   }
 
   Future<void> _uploadFile() async {
-    if (_selectedFile == null) return;
+    // if (_selectedFile == null) return;
+    // setState(() {
+    //   _selectedFile = widget.recordFile;
+    // });
+    print("start");
+    final dio = Dio((BaseOptions(
+      connectTimeout: const Duration(seconds: 200),  // 10초로 설정
+      receiveTimeout: const Duration(seconds: 200),  // 데이터 수신 시간 설정
+    )));
+    final uri = 'http://10.0.2.2:8000/api/stt/transcribe';
 
-    final dio = Dio();
-    final uri = 'http://10.0.2.2:8000/multipart-test';
+    Navigator.push(context, MaterialPageRoute(builder: (_) => const CircleScreen()));
 
     try {
+      String uploadJson = jsonEncode(widget.uploadVo.toJson());
+      print(uploadJson);
       // 파일을 FormData로 변환
       FormData formData = FormData.fromMap({
-        'file': await MultipartFile.fromFile(_selectedFile!.path, filename: _selectedFile!.name),
-      });
-
+        // 'data': uploadJson,
+        'rc_file': await MultipartFile.fromFile(widget.recordFile!.path, filename: widget.recordFile!.name,
+      contentType: DioMediaType('audio', 'wav'),  // MIME 타입 지정
+        ),
+      }
+      );
       // 파일 업로드 요청
       final response = await dio.post(
         uri,
         data: formData,
         options: Options(contentType: 'multipart/form-data'),
       );
-
+      Navigator.pop(context);
       if (response.statusCode == 200) {
         setState(() {
-          _uploadStatus = '파일 업로드 성공!  ${response.data['message']} (파일명: ${response.data['filename']}) ';
+          // _uploadStatus = '파일 업로드 성공!  ${response.data['message']} (파일명: ${response.data['filename']}) ';
+          _uploadStatus = '(파일 업로드 성공!  ${response}) ';
           print(_uploadStatus);
         });
+        Navigator.push(
+               context,
+               MaterialPageRoute(builder: (context) => ReviewScreen()),
+        );
+
       } else {
         setState(() {
           _uploadStatus = '업로드 실패: ${response.statusCode}';
@@ -90,6 +139,7 @@ class _UploadScreenState extends State<UploadScreen> {
         });
       }
     } catch (e) {
+      Navigator.pop(context);
       setState(() {
         _uploadStatus = '업로드 중 오류 발생: $e';
         print(_uploadStatus);
@@ -167,6 +217,29 @@ class _UploadScreenState extends State<UploadScreen> {
               ),
             ),
             SizedBox(height: 50),
+            ElevatedButton(
+              onPressed: _uploadFile,
+              //     () {
+              //   Navigator.push(
+              //     context,
+              //     MaterialPageRoute(builder: (context) => ReviewScreen()),
+              //   );
+              // },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue, // 버튼 배경색
+                padding: EdgeInsets.symmetric(vertical: 10), // 패딩 조정
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10), // 버튼 모서리 둥글게
+                ),
+              ),
+              child: Text(
+                '다음',
+                style: TextStyle(
+                  color: Colors.white, // 텍스트 색상 변경
+                  fontSize: 18, // 텍스트 크기 조정
+                ),
+              ),
+            ),
             Text('파일 업로드',
               style: TextStyle(
                   fontSize: 16,
@@ -203,12 +276,13 @@ class _UploadScreenState extends State<UploadScreen> {
             ),
             SizedBox(height: 50),
             ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ReviewScreen()),
-                );
-              },
+              onPressed: _uploadFile,
+              //     () {
+              //   Navigator.push(
+              //     context,
+              //     MaterialPageRoute(builder: (context) => ReviewScreen()),
+              //   );
+              // },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue, // 버튼 배경색
                 padding: EdgeInsets.symmetric(vertical: 10), // 패딩 조정
