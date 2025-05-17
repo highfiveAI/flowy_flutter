@@ -1,6 +1,4 @@
-
 import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
@@ -156,64 +154,59 @@ class _UploadScreenState extends State<UploadScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     return Scaffold(
+      backgroundColor: const Color(0xF5F8FCFF),
       appBar: AppBar(
-        title: Text('희의 정보'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        title: const Text('회의 정보', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0), // 가장자리 여백
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Text('회의 정보',
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold
-              ),),
-            Container(
-              color: Colors.black12,
-              width: 200,
-              height: 400,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Padding(
-                      padding: const EdgeInsets.all(6.0),
-                      child: Text('회의 주제: ${widget.uploadVo.subj}',
-                        style: TextStyle(
-                          color: Colors.black54,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold
-                      ),),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(6.0),
-                    child: Text('회의 일시: ${formatDate(widget.uploadVo.df)}',
-                      style: TextStyle(
-                          color: Colors.black54,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold
-                      ),),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(6.0),
-                    child: Text('회의 장소: ${formatDate(widget.uploadVo.loc)}',
-                      style: TextStyle(
-                          color: Colors.black54,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold
-                      ),),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(6.0),
-                    child: Text('참석자 정보:\n '
-                        '${widget.uploadVo.infoN.map((attendee) => '${attendee['name']} - ${attendee['role']}').join('\n ')}',
-                      style: TextStyle(
-                          color: Colors.black54,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold
-                      ),),
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: width * 0.06, vertical: height * 0.02),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 8),
+                const Text('회의 정보', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                Card(
+                  color: const Color(0xFFE9EEF5),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  elevation: 0,
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(18),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('회의 주제 :', style: TextStyle(color: Colors.black54, fontSize: 15, fontWeight: FontWeight.w500)),
+                        const SizedBox(height: 4),
+                        Text(widget.uploadVo.subj, style: TextStyle(color: Colors.black87, fontSize: 15)),
+                        const SizedBox(height: 10),
+                        Text('회의 일시 :', style: TextStyle(color: Colors.black54, fontSize: 15, fontWeight: FontWeight.w500)),
+                        const SizedBox(height: 4),
+                        Text(formatDate(widget.uploadVo.df), style: TextStyle(color: Colors.black87, fontSize: 15)),
+                        const SizedBox(height: 10),
+                        Text('회의 장소 :', style: TextStyle(color: Colors.black54, fontSize: 15, fontWeight: FontWeight.w500)),
+                        const SizedBox(height: 4),
+                        Text(formatDate(widget.uploadVo.loc), style: TextStyle(color: Colors.black87, fontSize: 15)),
+                        const SizedBox(height: 10),
+                        Text('참석자 정보 :', style: TextStyle(color: Colors.black54, fontSize: 15, fontWeight: FontWeight.w500)),
+                        const SizedBox(height: 4),
+                        SingleChildScrollView(
+                          child: Text(
+                            widget.uploadVo.infoN.map((attendee) => '${attendee['name']} - ${attendee['role']}').join('\n '),
+                            style: TextStyle(color: Colors.black87, fontSize: 15),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -291,16 +284,39 @@ class _UploadScreenState extends State<UploadScreen> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10), // 버튼 모서리 둥글게
                 ),
-              ),
-              child: Text(
-                '다음',
-                style: TextStyle(
-                  color: Colors.white, // 텍스트 색상 변경
-                  fontSize: 18, // 텍스트 크기 조정
-                ),
+                const SizedBox(height: 32),
+              ],
+            ),
+          ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+        child: SizedBox(
+          width: double.infinity,
+          height: 48,
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ReviewScreen()),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF1F72DE),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
-          ],
+            child: const Text(
+              '다음',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
         ),
       ),
     );

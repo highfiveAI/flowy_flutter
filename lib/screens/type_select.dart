@@ -119,7 +119,7 @@ class _SelectTypeScreenState extends State<SelectTypeScreen> {
                 description: '업무 협업, 소규모 회의 등\n직장 생활을 위한 회의에 적합해요.',
                 color: Colors.green,
               ),
-              SizedBox(height: 70),
+              SizedBox(height: 28),
               SizedBox(
                 width: 320,
                 child: ElevatedButton(
@@ -137,7 +137,7 @@ class _SelectTypeScreenState extends State<SelectTypeScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 32),
+              SizedBox(height: 10),
             ],
           ),
         ),
