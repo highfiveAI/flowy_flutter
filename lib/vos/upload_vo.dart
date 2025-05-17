@@ -21,9 +21,9 @@ class UploadVO {
   // JSON 직렬화를 위한 메서드
   Map<String, dynamic> toJson() => {
     'subj': subj,
-    'infoN': infoN.map((map) => Map<String, String>.from(map)).toList(),
+    'info_n': infoN.map((map) => Map<String, String>.from(map)).toList(),
     'loc': loc,
-    'df': df,
+    'dt': df,
   };
 
   // JSON 역직렬화를 위한 팩토리 메서드

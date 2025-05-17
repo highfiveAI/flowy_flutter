@@ -30,7 +30,7 @@ class _UploadScreenState extends State<UploadScreen> {
 
     try {
       // FastAPI 서버 주소를 입력하세요.
-      final response = await dio.get('http://10.0.2.2:8000/api/test/hello');
+      final response = await dio.get('http://10.0.2.2:8000/api/v1/analyze');
 
       if (response.statusCode == 200) {
         print("hi");
@@ -99,7 +99,7 @@ class _UploadScreenState extends State<UploadScreen> {
       connectTimeout: const Duration(seconds: 200),  // 10초로 설정
       receiveTimeout: const Duration(seconds: 200),  // 데이터 수신 시간 설정
     )));
-    final uri = 'http://10.0.2.2:8000/api/stt/transcribe';
+    final uri = 'http://10.0.2.2:8000/api/v1/analyze';
 
     Navigator.push(context, MaterialPageRoute(builder: (_) => const CircleScreen()));
 
@@ -108,7 +108,7 @@ class _UploadScreenState extends State<UploadScreen> {
       print(uploadJson);
       // 파일을 FormData로 변환
       FormData formData = FormData.fromMap({
-        // 'data': uploadJson,
+        'data': uploadJson,
         'rc_file': await MultipartFile.fromFile(widget.recordFile!.path, filename: widget.recordFile!.name,
       contentType: DioMediaType('audio', 'wav'),  // MIME 타입 지정
         ),
@@ -127,9 +127,11 @@ class _UploadScreenState extends State<UploadScreen> {
           _uploadStatus = '(파일 업로드 성공!  ${response}) ';
           print(_uploadStatus);
         });
+        final data = response.data;
+        print(data);
         Navigator.push(
                context,
-               MaterialPageRoute(builder: (context) => ReviewScreen()),
+               MaterialPageRoute(builder: (context) => ReviewScreen(data: data)),
         );
 
       } else {
