@@ -2,6 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:record3/main.dart';
 
 class ReviewScreen extends StatelessWidget {
+
+  final Map<String, dynamic> data;
+
+  const ReviewScreen({super.key, required this.data});
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,47 +34,145 @@ class ReviewScreen extends StatelessWidget {
                 color: Color(0xFFE6ECF2),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Text('회의 주제 :\n회의 일시 :\n참석자 정보 :', style: TextStyle(color: Colors.black54)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('회의 주제 : ${data['meeting_info']['subj']}', style: TextStyle(color: Colors.black54)),
+                  Text('회의 일시 : ${data['meeting_info']['dt']}', style: TextStyle(color: Colors.black54)),
+                  Text('회의 장소 : ${data['meeting_info']['loc']}', style: TextStyle(color: Colors.black54)),
+                  SizedBox(height: 12),
+                  Text('참석자 정보', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  SizedBox(height: 8),
+                  ...((data['meeting_info']['info_n'] as List<dynamic>).map((item) {
+                    return Container(
+                      margin: EdgeInsets.only(bottom: 12),
+                      padding: EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('이름: ${item['name']}', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                          SizedBox(height: 4),
+                          Text('이메일: ${item['email']}', style: TextStyle(color: Colors.black54, fontSize: 13)),
+                          SizedBox(height: 2),
+                          Text('역할: ${item['role']}', style: TextStyle(color: Colors.black54, fontSize: 13)),
+                        ],
+                      ),
+                    );
+                  }).toList()),
+                ],
+              ),
             ),
+
             SizedBox(height: 24),
             Text('회의 요약', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             SizedBox(height: 8),
             Container(
               width: double.infinity,
-              height: 120,
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Color(0xFFE6ECF2),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Text('요약된 회의 내용 출력', style: TextStyle(color: Colors.black45)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: (data['summary_result']['summary'] as List<dynamic>).map<Widget>((summaryItem) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('• ', style: TextStyle(color: Colors.black45, fontSize: 16)),
+                        Expanded(
+                          child: Text(
+                            summaryItem.toString(),
+                            style: TextStyle(color: Colors.black45, fontSize: 14, height: 1.3),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
             ),
             SizedBox(height: 24),
             Text('역할 분담', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             SizedBox(height: 8),
             Container(
               width: double.infinity,
-              height: 80,
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Color(0xFFE6ECF2),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Text('회의 참석자 역할에 따른 할 일 정보 전달', style: TextStyle(color: Colors.black45)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: (data['action_items_result']['tasks'] as List<dynamic>).map((task) {
+                  final name = task['name'];
+                  final role = task['role'];
+                  final taskList = (task['tasks'] as List<dynamic>).cast<String>();
+
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('$name ($role)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                        ...taskList.map((t) => Text('- $t', style: TextStyle(color: Colors.black54))).toList(),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
             ),
             SizedBox(height: 24),
             Text('회의 피드백', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             SizedBox(height: 8),
-            Container(
-              width: double.infinity,
-              height: 80,
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Color(0xFFE6ECF2),
-                borderRadius: BorderRadius.circular(12),
+        SizedBox(height: 8),
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Color(0xFFE6ECF2),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '필요 비율: ${data['feedback_result']['necessary_ratio']}%, '
+                    '불필요 비율: ${data['feedback_result']['unnecessary_ratio']}%',
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
               ),
-              child: Text('회의 피드백 정보 제공', style: TextStyle(color: Colors.black45)),
-            ),
+              SizedBox(height: 12),
+              ...((data['feedback_result']['representative_unnecessary'] as List<dynamic>).map((item) {
+                final sentence = item['sentence'];
+                final reason = item['reason'];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('문장: $sentence', style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w600)),
+                      SizedBox(height: 4),
+                      Text('피드백: $reason', style: TextStyle(color: Colors.black54, fontStyle: FontStyle.italic)),
+                    ],
+                  ),
+                );
+              }).toList()),
+            ],
+          ),
+        ),
             SizedBox(height: 32),
             Row(
               children: [
