@@ -42,7 +42,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
 
   Future<String> _getTempFilePath() async {
     final dir = await getTemporaryDirectory();
-    return '${dir.path}/temp_record.wav';
+    return '${dir.path}/temp_record.m4a';
   }
 
   Future<void> _startOrResumeRecording() async {
@@ -54,7 +54,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
     } else {
       await _recorder!.startRecorder(
         toFile: _filePath,
-        codec: Codec.pcm16WAV,
+        codec: Codec.aacMP4,
       );
     }
     setState(() {
