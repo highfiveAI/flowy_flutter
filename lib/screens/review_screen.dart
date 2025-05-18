@@ -1,16 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:record3/main.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class ReviewScreen extends StatelessWidget {
-
+class ReviewScreen extends StatefulWidget {
   final Map<String, dynamic> data;
 
   const ReviewScreen({super.key, required this.data});
 
+  @override
+  State<ReviewScreen> createState() => _ReviewScreenState();
+}
 
+class _ReviewScreenState extends State<ReviewScreen> {
+  Future<void> sendMail() async {
+    final meetingInfo = widget.data['meeting_info'];
+    String subj = meetingInfo['subj'];
+    String dt = meetingInfo['dt'];
+    String place = meetingInfo['loc'];
+    List<dynamic> attendees = meetingInfo['info_n'];
+
+    List<Map<String, String>> attendeeList = attendees.map<Map<String, String>>((attendee) => {
+      'name': attendee['name'],
+      'email': attendee['email'],
+      'role': attendee['role'],
+    }).toList();
+
+    final url = Uri.parse('http://10.0.2.2:8000/api/email/send-email');
+    final jsonData = jsonEncode({
+      'subj': subj,
+      'dt': dt,
+      'loc': place,
+      'info_n': attendeeList,
+      'summary_result': widget.data['summary_result'],
+      'action_items_result': widget.data['action_items_result'],
+      'feedback_result': widget.data['feedback_result'],
+    });
+
+    print('메일 발송 시 전송되는 json 데이터:');
+    print(jsonData);
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonData,
+    );
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('메일 발송 성공!')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('메일 발송 실패: \n${response.body}')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    print('회의 Review로 넘어온 데이터:');
+    print(widget.data);
     return Scaffold(
       backgroundColor: Color(0xFFF3F7FB),
       appBar: AppBar(
@@ -37,13 +87,13 @@ class ReviewScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('회의 주제 : ${data['meeting_info']['subj']}', style: TextStyle(color: Colors.black54)),
-                  Text('회의 일시 : ${data['meeting_info']['dt']}', style: TextStyle(color: Colors.black54)),
-                  Text('회의 장소 : ${data['meeting_info']['loc']}', style: TextStyle(color: Colors.black54)),
+                  Text('회의 주제 : ${widget.data['meeting_info']['subj']}', style: TextStyle(color: Colors.black54)),
+                  Text('회의 일시 : ${widget.data['meeting_info']['dt']}', style: TextStyle(color: Colors.black54)),
+                  Text('회의 장소 : ${widget.data['meeting_info']['loc']}', style: TextStyle(color: Colors.black54)),
                   SizedBox(height: 12),
                   Text('참석자 정보', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                   SizedBox(height: 8),
-                  ...((data['meeting_info']['info_n'] as List<dynamic>).map((item) {
+                  ...((widget.data['meeting_info']['info_n'] as List<dynamic>).map((item) {
                     return Container(
                       margin: EdgeInsets.only(bottom: 12),
                       padding: EdgeInsets.all(12),
@@ -86,7 +136,7 @@ class ReviewScreen extends StatelessWidget {
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: (data['summary_result']['summary'] as List<dynamic>).map<Widget>((summaryItem) {
+                children: (widget.data['summary_result']['summary'] as List<dynamic>).map<Widget>((summaryItem) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Row(
@@ -117,7 +167,7 @@ class ReviewScreen extends StatelessWidget {
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: (data['action_items_result']['tasks'] as List<dynamic>).map((task) {
+                children: (widget.data['action_items_result']['tasks'] as List<dynamic>).map((task) {
                   final name = task['name'];
                   final role = task['role'];
                   final taskList = (task['tasks'] as List<dynamic>).cast<String>();
@@ -150,12 +200,12 @@ class ReviewScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '필요 비율: ${data['feedback_result']['necessary_ratio']}%, '
-                    '불필요 비율: ${data['feedback_result']['unnecessary_ratio']}%',
+                '필요 비율: ${widget.data['feedback_result']['necessary_ratio']}%, '
+                    '불필요 비율: ${widget.data['feedback_result']['unnecessary_ratio']}%',
                 style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
               ),
               SizedBox(height: 12),
-              ...((data['feedback_result']['representative_unnecessary'] as List<dynamic>).map((item) {
+              ...((widget.data['feedback_result']['representative_unnecessary'] as List<dynamic>).map((item) {
                 final sentence = item['sentence'];
                 final reason = item['reason'];
                 return Padding(
@@ -178,7 +228,7 @@ class ReviewScreen extends StatelessWidget {
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: sendMail,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFF2583D7),
                       shape: RoundedRectangleBorder(

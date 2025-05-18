@@ -10,7 +10,8 @@ class CircleScreen extends StatefulWidget {
 
 class _CircleScreenState extends State<CircleScreen> {
   int dotCount = 1;
-
+  Timer? _timer; // 타이머 변수 추가
+  
   @override
   void initState() {
     super.initState();
@@ -18,9 +19,9 @@ class _CircleScreenState extends State<CircleScreen> {
   }
 
   void _startDotAnimation() {
-    Timer.periodic(const Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return; // 추가: 위젯이 살아있을 때만 setState
       setState(() {
-        // 점의 개수를 순환시킴 (1 -> 2 -> 3 -> 1)
         dotCount = dotCount % 3 + 1;
       });
     });
@@ -58,6 +59,7 @@ class _CircleScreenState extends State<CircleScreen> {
 
   @override
   void dispose() {
+    _timer?.cancel(); // 타이머 해제
     super.dispose();
   }
 }
