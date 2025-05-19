@@ -8,56 +8,72 @@ class CircleScreen extends StatefulWidget {
   _CircleScreenState createState() => _CircleScreenState();
 }
 
-class _CircleScreenState extends State<CircleScreen> {
+class _CircleScreenState extends State<CircleScreen> with SingleTickerProviderStateMixin {
   int dotCount = 1;
+
+  int elapsedSeconds = 0;
+  Timer? _timer;
+  late AnimationController _rotationController;
 
   @override
   void initState() {
     super.initState();
-    _startDotAnimation();
-  }
-
-  void _startDotAnimation() {
-    Timer.periodic(const Duration(seconds: 1), (timer) {
+    _rotationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..repeat();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
-        // 점의 개수를 순환시킴 (1 -> 2 -> 3 -> 1)
         dotCount = dotCount % 3 + 1;
+        elapsedSeconds++;
       });
     });
   }
 
-  String get dots => '.' * dotCount;
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _rotationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue,
+      backgroundColor: const Color(0xFFF1F7FE),
       body: Center(
-        child: Container(
-          width: 350,
-          height: 350,
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-          ),
-          child: Center(
-            child: Text(
-              '분석중입니다$dots',  // 점 개수를 텍스트로 표시
-              style: const TextStyle(
-                fontSize: 40,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            RotationTransition(
+              turns: _rotationController,
+              child: Image.asset(
+                'assets/loading.png',
+                width: 80,
+                height: 80,
               ),
-              textAlign: TextAlign.center,
             ),
-          ),
+            const SizedBox(height: 32),
+            Text(
+              '분석 중',
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF2261B6),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              '${elapsedSeconds}초${'.' * dotCount}',
+              style: const TextStyle(
+                fontSize: 20,
+                color: Color(0xFF2261B6),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 }
