@@ -33,17 +33,26 @@ class _ReviewScreenState extends State<ReviewScreen> {
         'dt': dt,
         'loc': place,
         'info_n': attendeeList,
-        'summary_result': widget.data['summary_result'] is String
-            ? widget.data['summary_result']
-            : jsonEncode(widget.data['summary_result']),
-        'action_items_result': widget.data['action_items_result'] is List
-            ? widget.data['action_items_result']
-            : (widget.data['action_items_result'] is String
-                ? jsonDecode(widget.data['action_items_result'])
-                : []),
-        'feedback_result': widget.data['feedback_result'] is String
-            ? widget.data['feedback_result']
-            : jsonEncode(widget.data['feedback_result']),
+        'summary_result': cleanString(widget.data['summary_result']),
+        'action_items_result': (() {
+          List<dynamic> items;
+          if (widget.data['action_items_result'] is List) {
+            items = widget.data['action_items_result'];
+          } else if (widget.data['action_items_result'] is Map && widget.data['action_items_result']['tasks'] is List) {
+            items = widget.data['action_items_result']['tasks'];
+          } else {
+            items = [];
+          }
+          return items.map((item) {
+            final mapItem = Map<String, dynamic>.from(item);
+            final newItem = <String, dynamic>{};
+            newItem['assignee'] = mapItem['name'];
+            newItem['role'] = mapItem['role'];
+            newItem['task'] = mapItem['tasks'];
+            return newItem;
+          }).toList();
+        })(),
+        'feedback_result': cleanString(widget.data['feedback_result']),
       }
     });
 
@@ -65,6 +74,19 @@ class _ReviewScreenState extends State<ReviewScreen> {
         SnackBar(content: Text('메일 발송 실패: \n${response.body}')),
       );
     }
+  }
+
+  String cleanString(dynamic value) {
+    if (value is String) {
+      return value
+        .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n')
+        .replaceAll(RegExp(r'<br></br>', caseSensitive: false), '\n');
+    } else if (value is Map || value is List) {
+      return jsonEncode(value)
+        .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n')
+        .replaceAll(RegExp(r'<br></br>', caseSensitive: false), '\n');
+    }
+    return value.toString();
   }
 
   @override
