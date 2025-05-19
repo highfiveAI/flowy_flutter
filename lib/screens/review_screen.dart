@@ -28,13 +28,23 @@ class _ReviewScreenState extends State<ReviewScreen> {
 
     final url = Uri.parse('http://10.0.2.2:8000/api/email/send-email');
     final jsonData = jsonEncode({
-      'subj': subj,
-      'dt': dt,
-      'loc': place,
-      'info_n': attendeeList,
-      'summary_result': widget.data['summary_result'],
-      'action_items_result': widget.data['action_items_result'],
-      'feedback_result': widget.data['feedback_result'],
+      'meeting_info': {
+        'subj': subj,
+        'dt': dt,
+        'loc': place,
+        'info_n': attendeeList,
+        'summary_result': widget.data['summary_result'] is String
+            ? widget.data['summary_result']
+            : jsonEncode(widget.data['summary_result']),
+        'action_items_result': widget.data['action_items_result'] is List
+            ? widget.data['action_items_result']
+            : (widget.data['action_items_result'] is String
+                ? jsonDecode(widget.data['action_items_result'])
+                : []),
+        'feedback_result': widget.data['feedback_result'] is String
+            ? widget.data['feedback_result']
+            : jsonEncode(widget.data['feedback_result']),
+      }
     });
 
     print('메일 발송 시 전송되는 json 데이터:');

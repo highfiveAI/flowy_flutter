@@ -97,7 +97,7 @@ class _UploadScreenState extends State<UploadScreen> {
       print(uploadJson);
 
       FormData formData = FormData.fromMap({
-        'metadata_json': uploadJson,
+        'data': uploadJson,
         'rc_file': await MultipartFile.fromFile(
           widget.recordFile!.path,
           filename: widget.recordFile!.name,
