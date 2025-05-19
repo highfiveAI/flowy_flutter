@@ -131,11 +131,58 @@ class _UploadScreenState extends State<UploadScreen> {
         });
       }
     } catch (e) {
-      Navigator.pop(context);
-      setState(() {
-        _uploadStatus = '업로드 중 오류 발생: $e';
-        print(_uploadStatus);
-      });
+      if (mounted) Navigator.pop(context);
+      String serverDetail = '';
+      if (e is DioException) {
+        if (e.response?.data != null) {
+          try {
+            final data = e.response?.data;
+            if (data is Map<String, dynamic> && data.containsKey('detail')) {
+              final detail = data['detail'];
+              if (detail is List) {
+                serverDetail = detail.map((item) {
+                  if (item is Map<String, dynamic>) {
+                    return '[${item['loc']?.join(' > ') ?? ''}] ${item['msg'] ?? ''}';
+                  }
+                  return item.toString();
+                }).join('\n');
+              } else {
+                serverDetail = detail.toString();
+              }
+            } else if (data is String) {
+              final decoded = jsonDecode(data);
+              if (decoded is Map<String, dynamic> && decoded.containsKey('detail')) {
+                final detail = decoded['detail'];
+                if (detail is List) {
+                  serverDetail = detail.map((item) {
+                    if (item is Map<String, dynamic>) {
+                      return '[${item['loc']?.join(' > ') ?? ''}] ${item['msg'] ?? ''}';
+                    }
+                    return item.toString();
+                  }).join('\n');
+                } else {
+                  serverDetail = detail.toString();
+                }
+              } else {
+                serverDetail = data;
+              }
+            } else {
+              serverDetail = data.toString();
+            }
+          } catch (_) {
+            serverDetail = e.response?.data.toString() ?? '서버에서 에러 메시지를 내려주지 않음';
+          }
+        } else {
+          serverDetail = '서버에서 에러 메시지를 내려주지 않음';
+        }
+        print('Dio 오류 발생: ${e.toString()}');
+        print('서버에서 내려준 에러 detail: $serverDetail');
+        if (mounted) {
+          setState(() {
+            _uploadStatus = '업로드 중 오류 발생:\n$serverDetail';
+          });
+        }
+      }
     }
   }
 

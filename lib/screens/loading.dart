@@ -10,6 +10,7 @@ class CircleScreen extends StatefulWidget {
 
 class _CircleScreenState extends State<CircleScreen> with SingleTickerProviderStateMixin {
   int dotCount = 1;
+
   int elapsedSeconds = 0;
   Timer? _timer;
   late AnimationController _rotationController;
