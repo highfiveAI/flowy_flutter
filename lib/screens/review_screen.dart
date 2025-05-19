@@ -26,7 +26,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
       'role': attendee['role'],
     }).toList();
 
-    final url = Uri.parse('http://10.0.2.2:8000/api/email/send-email');
+    final url = Uri.parse('https://namely-amusing-eft.ngrok-free.app/api/email/send-email');
     final jsonData = jsonEncode({
       'meeting_info': {
         'subj': subj,

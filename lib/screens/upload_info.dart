@@ -20,57 +20,6 @@ class _UploadScreenState extends State<UploadScreen> {
   XFile? _selectedFile;
   String _uploadStatus = '파일을 선택하세요';
 
-  Future<void> fetchHelloMessage() async {
-    final dio = Dio();
-
-    try {
-      final response = await dio.get('http://10.0.2.2:8000/api/v1/analyze');
-
-      if (response.statusCode == 200) {
-        print("hi");
-        print('응답: ${response.data}');
-      } else {
-        print('에러 코드: ${response.statusCode}');
-      }
-    } on DioException catch (e) {
-      if (e.type == DioExceptionType.connectionTimeout) {
-        print('연결 시간이 초과되었습니다.');
-      } else if (e.type == DioExceptionType.receiveTimeout) {
-        print('응답 시간이 초과되었습니다.');
-      } else {
-        print('오류 발생: ${e.message}');
-      }
-    } catch (e) {
-      print('예상치 못한 오류: $e');
-    }
-  }
-
-  Future<void> _pickFile() async {
-    try {
-      final XFile? file = await openFile(
-        acceptedTypeGroups: [
-          XTypeGroup(label: 'images', extensions: ['jpg', 'jpeg', 'png', 'gif', 'bmp']),
-          XTypeGroup(label: 'documents', extensions: ['pdf', 'doc', 'docx', 'txt']),
-          XTypeGroup(label: 'audio', extensions: ['mp3', 'wav', 'aac']),
-          XTypeGroup(label: 'video', extensions: ['mp4', 'mkv', 'avi']),
-          XTypeGroup(label: 'archives', extensions: ['zip', 'rar', '7z']),
-          XTypeGroup(label: 'code', extensions: ['js', 'dart', 'py', 'java']),
-        ],
-      );
-
-      if (file != null) {
-        setState(() {
-          _selectedFile = file;
-          _uploadStatus = '파일 선택 완료: ${file.name}';
-        });
-      }
-    } catch (e) {
-      setState(() {
-        _uploadStatus = '파일 선택 오류: $e';
-      });
-    }
-  }
-
   String formatDate(String dateString) {
     try {
       DateTime dateTime = DateTime.parse(dateString);
@@ -88,9 +37,10 @@ class _UploadScreenState extends State<UploadScreen> {
         receiveTimeout: const Duration(seconds: 200),
       ),
     );
-    final uri = 'http://10.0.2.2:8000/api/v1/analyze';
+    final uri = 'https://namely-amusing-eft.ngrok-free.app/api/v1/analyze';
 
-    Navigator.push(context, MaterialPageRoute(builder: (_) => const CircleScreen()));
+    Navigator.push(
+        context, MaterialPageRoute(builder: (_) => const CircleScreen()));
 
     try {
       String uploadJson = jsonEncode(widget.uploadVo.toJson());
@@ -131,58 +81,11 @@ class _UploadScreenState extends State<UploadScreen> {
         });
       }
     } catch (e) {
-      if (mounted) Navigator.pop(context);
-      String serverDetail = '';
-      if (e is DioException) {
-        if (e.response?.data != null) {
-          try {
-            final data = e.response?.data;
-            if (data is Map<String, dynamic> && data.containsKey('detail')) {
-              final detail = data['detail'];
-              if (detail is List) {
-                serverDetail = detail.map((item) {
-                  if (item is Map<String, dynamic>) {
-                    return '[${item['loc']?.join(' > ') ?? ''}] ${item['msg'] ?? ''}';
-                  }
-                  return item.toString();
-                }).join('\n');
-              } else {
-                serverDetail = detail.toString();
-              }
-            } else if (data is String) {
-              final decoded = jsonDecode(data);
-              if (decoded is Map<String, dynamic> && decoded.containsKey('detail')) {
-                final detail = decoded['detail'];
-                if (detail is List) {
-                  serverDetail = detail.map((item) {
-                    if (item is Map<String, dynamic>) {
-                      return '[${item['loc']?.join(' > ') ?? ''}] ${item['msg'] ?? ''}';
-                    }
-                    return item.toString();
-                  }).join('\n');
-                } else {
-                  serverDetail = detail.toString();
-                }
-              } else {
-                serverDetail = data;
-              }
-            } else {
-              serverDetail = data.toString();
-            }
-          } catch (_) {
-            serverDetail = e.response?.data.toString() ?? '서버에서 에러 메시지를 내려주지 않음';
-          }
-        } else {
-          serverDetail = '서버에서 에러 메시지를 내려주지 않음';
-        }
-        print('Dio 오류 발생: ${e.toString()}');
-        print('서버에서 내려준 에러 detail: $serverDetail');
-        if (mounted) {
-          setState(() {
-            _uploadStatus = '업로드 중 오류 발생:\n$serverDetail';
-          });
-        }
-      }
+      Navigator.pop(context);
+      setState(() {
+        _uploadStatus = '업로드 중 오류 발생: $e';
+        print(_uploadStatus);
+      });
     }
   }
 
