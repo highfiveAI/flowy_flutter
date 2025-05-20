@@ -10,14 +10,18 @@ import 'package:record3/vos/upload_vo.dart';
 class UploadScreen extends StatefulWidget {
   final UploadVO uploadVo;
   final XFile? recordFile;
-  const UploadScreen({super.key, required this.uploadVo, required this.recordFile});
+
+  const UploadScreen({
+    super.key,
+    required this.uploadVo,
+    required this.recordFile,
+  });
 
   @override
   _UploadScreenState createState() => _UploadScreenState();
 }
 
 class _UploadScreenState extends State<UploadScreen> {
-  XFile? _selectedFile;
   String _uploadStatus = '파일을 선택하세요';
 
   String formatDate(String dateString) {
@@ -40,7 +44,9 @@ class _UploadScreenState extends State<UploadScreen> {
     final uri = 'https://namely-amusing-eft.ngrok-free.app/api/v1/analyze';
 
     Navigator.push(
-        context, MaterialPageRoute(builder: (_) => const CircleScreen()));
+      context,
+      MaterialPageRoute(builder: (_) => const CircleScreen()),
+    );
 
     try {
       String uploadJson = jsonEncode(widget.uploadVo.toJson());
@@ -58,7 +64,10 @@ class _UploadScreenState extends State<UploadScreen> {
       final response = await dio.post(
         uri,
         data: formData,
-        options: Options(contentType: 'multipart/form-data'),
+        options: Options(
+          contentType: 'multipart/form-data',
+          headers: {'ngrok-skip-browser-warning': '69420'},
+        ),
       );
 
       Navigator.pop(context);
@@ -89,10 +98,6 @@ class _UploadScreenState extends State<UploadScreen> {
     }
   }
 
-  final TextEditingController _controller1 = TextEditingController();
-  final TextEditingController _controller2 = TextEditingController();
-  final TextEditingController _controller3 = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -111,17 +116,25 @@ class _UploadScreenState extends State<UploadScreen> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: width * 0.06, vertical: height * 0.02),
+          padding: EdgeInsets.symmetric(
+            horizontal: width * 0.06,
+            vertical: height * 0.02,
+          ),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 8),
-                const Text('회의 정보', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const Text(
+                  '회의 정보',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(height: 8),
                 Card(
                   color: const Color(0xFFE9EEF5),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   elevation: 0,
                   child: Container(
                     width: double.infinity,
@@ -129,46 +142,69 @@ class _UploadScreenState extends State<UploadScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('회의 주제 :',
-                            style: TextStyle(
-                                color: Colors.black54,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500)),
+                        Text(
+                          '회의 주제 :',
+                          style: TextStyle(
+                            color: Colors.black54,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                         const SizedBox(height: 4),
-                        Text(widget.uploadVo.subj,
-                            style: TextStyle(color: Colors.black87, fontSize: 15)),
+                        Text(
+                          widget.uploadVo.subj,
+                          style: TextStyle(color: Colors.black87, fontSize: 15),
+                        ),
                         const SizedBox(height: 10),
-                        Text('회의 일시 :',
-                            style: TextStyle(
-                                color: Colors.black54,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500)),
+                        Text(
+                          '회의 일시 :',
+                          style: TextStyle(
+                            color: Colors.black54,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                         const SizedBox(height: 4),
-                        Text(formatDate(widget.uploadVo.df),
-                            style: TextStyle(color: Colors.black87, fontSize: 15)),
+                        Text(
+                          formatDate(widget.uploadVo.df),
+                          style: TextStyle(color: Colors.black87, fontSize: 15),
+                        ),
                         const SizedBox(height: 10),
-                        Text('회의 장소 :',
-                            style: TextStyle(
-                                color: Colors.black54,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500)),
+                        Text(
+                          '회의 장소 :',
+                          style: TextStyle(
+                            color: Colors.black54,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                         const SizedBox(height: 4),
-                        Text(formatDate(widget.uploadVo.loc),
-                            style: TextStyle(color: Colors.black87, fontSize: 15)),
+                        Text(
+                          formatDate(widget.uploadVo.loc),
+                          style: TextStyle(color: Colors.black87, fontSize: 15),
+                        ),
                         const SizedBox(height: 10),
-                        Text('참석자 정보 :',
-                            style: TextStyle(
-                                color: Colors.black54,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500)),
+                        Text(
+                          '참석자 정보 :',
+                          style: TextStyle(
+                            color: Colors.black54,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                         const SizedBox(height: 4),
                         SingleChildScrollView(
                           child: Text(
                             widget.uploadVo.infoN
-                                .map((attendee) =>
-                            '${attendee['name']} - ${attendee['role']}')
-                                .join('\n '),
-                            style: TextStyle(color: Colors.black87, fontSize: 15),
+                                .map(
+                                  (attendee) =>
+                                      '${attendee['name']} - ${attendee['role']}',
+                                )
+                                .join('\n'),
+                            style: TextStyle(
+                              color: Colors.black87,
+                              fontSize: 15,
+                            ),
                           ),
                         ),
                       ],
@@ -187,10 +223,7 @@ class _UploadScreenState extends State<UploadScreen> {
                   child: Center(
                     child: Text(
                       '선택된 파일: ${widget.recordFile?.name}',
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                      ),
+                      style: const TextStyle(color: Colors.black, fontSize: 18),
                     ),
                   ),
                 ),

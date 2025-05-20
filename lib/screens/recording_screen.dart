@@ -30,9 +30,9 @@ class _RecordingScreenState extends State<RecordingScreen> {
     var status = await Permission.microphone.request();
     if (!status.isGranted) {
       // 권한이 없으면 안내 후 리턴
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('마이크 권한이 필요합니다.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('마이크 권한이 필요합니다.')));
       return;
     }
     _recorder = FlutterSoundRecorder();
@@ -52,10 +52,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
     if (_isPaused) {
       await _recorder!.resumeRecorder();
     } else {
-      await _recorder!.startRecorder(
-        toFile: _filePath,
-        codec: Codec.aacMP4,
-      );
+      await _recorder!.startRecorder(toFile: _filePath, codec: Codec.aacMP4);
     }
     setState(() {
       _isRecording = true;
@@ -102,7 +99,9 @@ class _RecordingScreenState extends State<RecordingScreen> {
     }
     if (!exists) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('녹음이 아직 완료되지 않았어요.\n회의 녹음을 완료한 후에 다음 단계로 진행해 주세요.')),
+        SnackBar(
+          content: Text('녹음이 아직 완료되지 않았어요.\n회의 녹음을 완료한 후에 다음 단계로 진행해 주세요.'),
+        ),
       );
       return;
     }
@@ -111,9 +110,9 @@ class _RecordingScreenState extends State<RecordingScreen> {
     print('XFile 경로: \\${xfile.path}');
     print('녹음 파일 경로: \\$_filePath');
     print('파일 존재 여부: \\$exists');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('녹음이 완료되어 임시 저장되었습니다.')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('녹음이 완료되어 임시 저장되었습니다.')));
     // 분석 중입니다 페이지로 이동
     // Navigator.push(
     //   context,
@@ -146,7 +145,11 @@ class _RecordingScreenState extends State<RecordingScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             IconButton(
-              icon: Icon(_isRecording ? Icons.pause_circle_filled : Icons.mic, size: 64, color: Colors.red),
+              icon: Icon(
+                _isRecording ? Icons.pause_circle_filled : Icons.mic,
+                size: 64,
+                color: Colors.red,
+              ),
               onPressed: _onRecordButtonPressed,
             ),
             SizedBox(height: 20),

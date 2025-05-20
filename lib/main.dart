@@ -8,9 +8,7 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: WelcomeScreen(),
-    );
+    return MaterialApp(home: WelcomeScreen());
   }
 }
 
@@ -49,7 +47,9 @@ class WelcomeScreen extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SelectTypeScreen()),
+                      MaterialPageRoute(
+                        builder: (context) => SelectTypeScreen(),
+                      ),
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -65,10 +65,7 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                   child: const Text(
                     '시작하기',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                    ),
+                    style: TextStyle(color: Colors.white, fontSize: 18),
                   ),
                 ),
               ),
@@ -80,4 +77,3 @@ class WelcomeScreen extends StatelessWidget {
     );
   }
 }
-
