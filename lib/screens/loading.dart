@@ -8,7 +8,8 @@ class CircleScreen extends StatefulWidget {
   _CircleScreenState createState() => _CircleScreenState();
 }
 
-class _CircleScreenState extends State<CircleScreen> with SingleTickerProviderStateMixin {
+class _CircleScreenState extends State<CircleScreen>
+    with SingleTickerProviderStateMixin {
   int dotCount = 1;
 
   int elapsedSeconds = 0;
@@ -47,11 +48,7 @@ class _CircleScreenState extends State<CircleScreen> with SingleTickerProviderSt
           children: [
             RotationTransition(
               turns: _rotationController,
-              child: Image.asset(
-                'assets/loading.png',
-                width: 80,
-                height: 80,
-              ),
+              child: Image.asset('assets/loading.png', width: 80, height: 80),
             ),
             const SizedBox(height: 32),
             Text(
